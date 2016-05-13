@@ -148,6 +148,21 @@ tc_packets_init(tc_event_loop_t *event_loop)
     }
 #endif
 
+    if ((fd = tc_socket_create_bind_listen()) == TC_INVALID_SOCK) {
+        return TC_ERR;
+    }
+    tc_socket_set_nonblocking(fd);
+
+    ev = tc_event_create(event_loop->pool, fd, proc_api_request, NULL);
+    if (ev == NULL) {
+        return TC_ERR;
+    }
+
+    if (tc_event_add(event_loop, ev, TC_EVENT_READ) == TC_EVENT_ERROR) {
+        tc_log_info(LOG_ERR, 0, "add socket(%d) to event loop failed.", fd);
+        return TC_ERR;
+    }
+
     return TC_OK;
 }
 

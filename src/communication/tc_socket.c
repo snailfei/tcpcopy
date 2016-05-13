@@ -165,6 +165,55 @@ tc_raw_socket_in_init(int type)
 
 
 int
+tc_socket_create_bind_listen(void)
+{
+    int fd;
+    int opt_value;
+    int opt_len;
+    struct sockaddr_in addr;
+    socklen_t  addr_len;
+
+
+    fd = socket(AF_INET, SOCK_STREAM, 0);
+    if (fd < 0) {
+        tc_log_info(LOG_ERR, errno, "Create stream socket failed");
+        return TC_INVALID_SOCK;
+    }
+
+    opt_value = 8 * 1024 * 1024;
+    opt_len = sizeof(opt_value);
+    if (setsockopt(fd, SOL_SOCKET, SO_RCVBUF, &opt_value, opt_len) < 0) {
+        tc_log_info(LOG_ERR, errno, "setsockopt(socket=%d) failed", fd);
+        return TC_INVALID_SOCK;
+    }
+
+    opt_value = 1;
+    opt_len = sizeof(opt_value);
+    if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &opt_value, opt_len) < 0) {
+        tc_log_info(LOG_ERR, errno, "setsockopt(socket=%d) failed", fd);
+        return TC_INVALID_SOCK;
+    }
+
+    addr.sin_family = AF_INET;
+    addr.sin_port   = htons(8080);
+    addr.sin_addr.s_addr = INADDR_ANY;
+    addr_len = sizeof(addr);
+
+    if (bind(fd, (struct sockaddr *) &addr, addr_len) < 0) {
+        tc_log_info(LOG_ERR, errno, "bind failed");
+        return TC_INVALID_SOCK;
+    }
+
+    if (listen(fd, 10) < 0) {
+        tc_log_info(LOG_ERR, errno, "listen failed");
+        return TC_INVALID_SOCK;
+    }
+
+    return fd;
+}
+
+
+int
 tc_raw_socket_out_init(void)
 {
     int fd, n;

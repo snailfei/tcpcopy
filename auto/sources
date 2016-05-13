@@ -62,9 +62,11 @@ DIGEST_SRCS="src/digest/tc_evp.c"
 
 UTIL_INCS="src/util"
 
-UTIL_DEPS="src/util/tc_util.h" 
+UTIL_DEPS="src/util/tc_util.h \
+           src/util/http_parser.h" 
 
-UTIL_SRCS="src/util/tc_util.c" 
+UTIL_SRCS="src/util/tc_util.c \
+           src/util/http_parser.c" 
 
 TCPCOPY_INCS="src/tcpcopy"
 
@@ -72,18 +74,21 @@ TCPCOPY_DEPS="src/tcpcopy/tcpcopy.h \
               src/tcpcopy/tc_manager.h \
               src/tcpcopy/tc_message_module.h \
               src/tcpcopy/tc_packets_module.h \
-              src/tcpcopy/tc_session.h"
+              src/tcpcopy/tc_session.h \
+              src/tcpcopy/tc_http.h"
 
 if [ $TC_UDP = YES ]; then
 TCPCOPY_SRCS="src/tcpcopy/tc_manager.c \
               src/tcpcopy/tc_packets_module.c \
               src/tcpcopy/tc_message_module.c \
               src/tcpcopy/tc_udp_session.c \
+              src/tcpcopy/tc_http.c \
               src/tcpcopy/main.c"
 else
 TCPCOPY_SRCS="src/tcpcopy/tc_manager.c \
               src/tcpcopy/tc_packets_module.c \
               src/tcpcopy/tc_message_module.c \
               src/tcpcopy/tc_session.c \
+              src/tcpcopy/tc_http.c \
               src/tcpcopy/main.c"
 fi
